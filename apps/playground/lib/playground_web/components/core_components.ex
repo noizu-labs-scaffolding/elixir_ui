@@ -695,12 +695,13 @@ defmodule PlaygroundWeb.CoreComponents do
   end
   def showcase(assigns) when not is_map_key(assigns, :id) do
     assigns
-    |> assign(id: "sc-#{:os.system_time(:millisecond)}")
+    |> assign_new(:id, fn() -> "sc-#{rem(:os.system_time(:nanosecond),1_000_000)}#{:rand.uniform(5000000)}" end)
     |> showcase()
   end
   def showcase(assigns) do
     ~H"""
-      <div
+      <form>
+      <span class="text-black"><%= @id %></span><div
         id={@id}
         class={["
           showcase-container
@@ -749,6 +750,7 @@ defmodule PlaygroundWeb.CoreComponents do
         </div>
       </div>
     </div>
+    </form>
     """
 
   end

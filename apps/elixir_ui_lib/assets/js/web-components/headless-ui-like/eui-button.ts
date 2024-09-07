@@ -36,6 +36,8 @@ export class EuiButton extends HeadlessUiLikeWebComponent {
             this.manager.addEventListener(this.button, 'mouseleave', () => this.clearFlag(this.button, 'hover'));
 
 
+
+
             // Focus Tracking : crude initial version: focus should only be set by keyboard navigation not mouse clicks.
             this.manager.addEventListener(this.button, 'focus',  () => !this.active && this.setFlag(this.button, 'focus'));
             this.manager.addEventListener(this.button, 'blur',  () => !this.active && this.clearFlag(this.button, 'focus'));

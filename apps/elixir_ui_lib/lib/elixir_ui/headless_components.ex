@@ -151,6 +151,7 @@ defmodule ElixirUI.HeadlessComponents do
 
   attr :as, :any, default: :button
   attr :class, :string, default: nil
+  attr :disabled, :boolean, default: false
   attr :type, :string, default: "button"
   attr :rest, :global
   slot :inner_block, required: true
@@ -162,24 +163,91 @@ defmodule ElixirUI.HeadlessComponents do
         class={@class}
         type={@type}
         role="button"
+        {@disabled && %{disabled: []} || %{tabindex: 0} }
         {@rest}
     ><%= render_slot(@inner_block) %></.dynamic_tag_fork>
     </eui-button>
     """
   end
 
-  attr :as, :any, default: :button
+
+  @doc """
+  # Based on
+
+  - [HeadlessUI demo](https://headlessui.com/react/checkbox)
+
+  - [HeadlessUI implementation](https://github.com/tailwindlabs/headlessui/blob/main/packages/@headlessui-react/src/components/checkbox/checkbox.tsx)
+
+    ## Example
+    <span
+        class="group size-6 rounded-md bg-white/10 p-1 ring-1 ring-white/15 ring-inset data-[checked]:bg-white"
+        id="headlessui-checkbox-:R16:"
+        role="checkbox"
+        aria-checked="true"
+        tabindex="0"
+        data-headlessui-state="checked"
+        data-checked="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon" class="hidden size-4 fill-black group-data-[checked]:block"><path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd"></path></svg>
+    </span>
+
+    """
+  attr :id, :any, default: nil
+  attr :name, :any
+  attr :value, :any
+  attr :field, Phoenix.HTML.FormField,
+       doc: "a form field struct retrieved from the form, for example: @form[:email]"
+  attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
+
+  attr :as, :any, default: :span
   attr :class, :string, default: nil
+  attr :disabled, :boolean, default: false
   attr :rest, :global
   slot :inner_block, required: true
+  def checkbox(assigns)
+  def checkbox(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    assigns
+    |> assign(field: nil, id: assigns.id || field.id)
+    #|> assign(:errors, Enum.map(errors, &translate_error(&1)))
+    |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
+    |> assign_new(:value, fn -> field.value end)
+    |> checkbox()
+  end
   def checkbox(assigns) do
+    assigns = assigns
+      |> assign_new(:checked, fn ->
+        Phoenix.HTML.Form.normalize_value("checkbox", assigns[:value])
+      end)
+      |> assign_new(:id, fn ->
+        "cb-#{rem(:os.system_time(:nanosecond),1_000_000)}#{:rand.uniform(5000000)}"
+      end)
+              |> assign_new(:name, fn ->
+      "cb-#{rem(:os.system_time(:nanosecond),1_000_000)}#{:rand.uniform(5000000)}"
+    end)
+
     ~H"""
     <eui-checkbox>
-    <.dynamic_tag
-      name={@as}
-      class={[@class]} {@rest}
-    ><%= render_slot(@inner_block) %>
-    </.dynamic_tag>
+    <.dynamic_tag_fork
+      as={@as}
+      role="checkbox"
+      aria-checked={@checked}
+      class={[@class]}
+      {@checked && %{"data-checked": []} || %{}}
+      {@disabled && %{disabled: []} || %{tabindex: 0} }
+      {@rest |> Map.drop([:checked, :disabled, :"phx-change"])}
+    >
+    <input
+      id={@id}
+      type="hidden"
+      name={@name}
+      value={@checked && "true" || "false"}
+      {@disabled && %{disabled: []} || %{} }
+      {Map.take(@rest, [:"phx-change",:"phx-click",:"phx-focus",:"phx-blur",:"phx-keydown",:"phx-keyup",:"phx-keypress"])}
+
+
+    />
+    <%= render_slot(@inner_block) %>
+    </.dynamic_tag_fork>
     </eui-checkbox>
     """
   end
