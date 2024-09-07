@@ -1,5 +1,5 @@
 
-eui-button, eui-checkbox {
+eui-button, eui-checkbox, eui-textarea {
     display: contents;
 }
 
@@ -14,4 +14,9 @@ eui-checkbox .eui-demo[role="checkbox"] {
 
 eui-checkbox .eui-demo[role="checkbox"]:disabled svg{
     @apply fill-black/20;
+}
+
+eui-textarea > :first-child {
+    @apply block w-full h-fit resize-none rounded-sm border-none bg-white/15 py-1.5 px-3 m-2 text-sm/6 text-white;
+    @apply focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25 data-[hover]:bg-yellow-500;
 }

@@ -10,7 +10,7 @@ defmodule PlaygroundWeb.PreviewLive do
     <.flash_group flash={@flash} />
     <h1> Widgets </h1>
 
-    <.showcase class="w-3/6 h-64">
+    <.showcase class="w-5/6 h-64">
     <:title>Button Component</:title>
     <:example name="Standard" class="bg-black/90 relative w-full h-full">
         <div class="absolute inset-[35%] block rounded-full bg-white/50  blur-2xl"></div>
@@ -26,7 +26,7 @@ defmodule PlaygroundWeb.PreviewLive do
     </:example>
     </.showcase>
 
-    <.showcase class="w-3/6 h-64">
+    <.showcase class="w-5/6 h-64">
     <:title>Checkbox Component</:title>
     <:example name="Checked" class="bg-black/90 relative w-full h-full">
         <div class="absolute inset-[35%] block rounded-full bg-white/50  blur-2xl"></div>
@@ -67,6 +67,24 @@ defmodule PlaygroundWeb.PreviewLive do
 
 
     </.showcase>
+
+
+
+
+
+    <.showcase class="w-5/6 h-64">
+    <:title>Textarea Component</:title>
+    <:example name="Basic" class="bg-black/90 relative w-full h-full">
+        <.textarea rows="3"
+          phx-change="pending4"
+          class="eui-demo"
+    >Basic</.textarea>
+    </:example>
+    </.showcase>
+
+
+
+
 
     <.showcase class="w-3/6 h-64">
     <:title>Dropdown Component</:title>
@@ -204,13 +222,6 @@ defmodule PlaygroundWeb.PreviewLive do
     </.showcase>
 
 
-
-    <.showcase class="w-3/6 h-64">
-    <:title>Textarea Component</:title>
-    <:example name="Basic">
-        <.textarea>Basic</.textarea>
-    </:example>
-    </.showcase>
 
     </div>
     """

@@ -211,7 +211,7 @@ defmodule ElixirUI.HeadlessComponents do
        doc: "a form field struct retrieved from the form, for example: @form[:email]"
   attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
 
-  attr :as, :any, default: :button
+  attr :as, :any, default: :span
   attr :class, :string, default: nil
   attr :disabled, :boolean, default: false
   attr :rest, :global
@@ -384,24 +384,47 @@ defmodule ElixirUI.HeadlessComponents do
     """
   end
 
-
-  attr :as, :any, default: :button
+  attr :id, :any, default: nil
+  attr :name, :any
+  attr :field, Phoenix.HTML.FormField,
+       doc: "a form field struct retrieved from the form, for example: @form[:email]"
+    attr :as, :any, default: :textarea
   attr :class, :string, default: nil
+  attr :disabled, :boolean, default: false
   attr :rest, :global
   slot :inner_block, required: true
+  def textarea(assigns)
+  def textarea(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    assigns
+    |> assign(field: nil, id: assigns.id || field.id)
+      #|> assign(:errors, Enum.map(errors, &translate_error(&1)))
+    |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
+    |> assign_new(:value, fn -> field.value end)
+    |> textarea()
+  end
   def textarea(assigns) do
+    assigns = assigns
+              |> assign_new(:id, fn ->
+      "ta-#{rem(:os.system_time(:nanosecond),1_000_000)}#{:rand.uniform(5000000)}"
+    end)
+              |> assign_new(:name, fn ->
+      "ta-#{rem(:os.system_time(:nanosecond),1_000_000)}#{:rand.uniform(5000000)}"
+    end)
+              |> assign_new(:value, fn -> "" end)
+
     ~H"""
     <eui-textarea>
-    <.dynamic_tag
-      name={@as}
-      class={[@class]} {@rest}
-    ><%= render_slot(@inner_block) %>
-    </.dynamic_tag>
+    <.dynamic_tag_fork
+      as={@as}
+      data-textarea-field="true"
+      class={[@class]}
+      {@disabled && %{disabled: []} || %{} }
+      {@rest}
+    ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></.dynamic_tag_fork>
     </eui-textarea>
     """
   end
-
-
 
 
 
