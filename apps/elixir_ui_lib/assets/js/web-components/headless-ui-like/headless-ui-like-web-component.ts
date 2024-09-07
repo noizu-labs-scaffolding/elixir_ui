@@ -137,7 +137,10 @@ export class HeadlessUiLikeWebComponent extends HTMLElement {
         console.log(`Attribute ${name} has changed from ${oldValue} to ${newValue}.`, this);
     }
 
-
+    triggerPhx(element) {
+        let event = new Event("input", {bubbles: true});
+        element.dispatchEvent(event);
+    }
 
     setFlag(target: Element, flag: string) {
         target.toggleAttribute(`data-${flag}`, true);

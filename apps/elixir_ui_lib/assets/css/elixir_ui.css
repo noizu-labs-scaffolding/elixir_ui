@@ -4,10 +4,14 @@ eui-button, eui-checkbox {
 }
 
 eui-button .eui-demo[role="button"] {
-    @apply inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white;
+    @apply inline-flex items-center gap-2 rounded-md bg-gray-700 disabled:bg-black/50 disabled:text-white/50 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white
 }
 
 
 eui-checkbox .eui-demo[role="checkbox"] {
-    @apply size-6 rounded-md bg-white/50 p-1 ring-1 ring-white/55 ring-inset data-[checked]:bg-white;
+    @apply inline-flex size-6 rounded-md bg-white/50 p-1 ring-1 ring-white/55 ring-inset data-[checked]:bg-white/80 disabled:data-[checked]:bg-white/30  disabled:bg-white/20;
+}
+
+eui-checkbox .eui-demo[role="checkbox"]:disabled svg{
+    @apply fill-black/20;
 }

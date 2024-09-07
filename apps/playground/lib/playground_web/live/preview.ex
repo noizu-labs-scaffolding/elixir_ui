@@ -15,13 +15,13 @@ defmodule PlaygroundWeb.PreviewLive do
     <:example name="Standard" class="bg-black/90 relative w-full h-full">
         <div class="absolute inset-[35%] block rounded-full bg-white/50  blur-2xl"></div>
         <div class="relative flex h-fit  w-full flex-col items-center justify-center">
-                <.button class="eui-demo" name="bob" phx-click="ohno" >Hello Dolly</.button>
+                <.button class="eui-demo" name="bob" phx-click="ohno" >Standard</.button>
         </div>
     </:example>
     <:example name="Disabled" class="bg-black/90 relative w-full h-full">
         <div class="absolute inset-[35%] block rounded-full bg-white/50  blur-2xl"></div>
         <div class="relative flex h-fit  w-full flex-col items-center justify-center">
-                <.button class="eui-demo" disabled name="bob" >Hello Dolly</.button>
+                <.button class="eui-demo" disabled name="bob" >Disabled</.button>
         </div>
     </:example>
     </.showcase>
@@ -225,6 +225,10 @@ defmodule PlaygroundWeb.PreviewLive do
   end
 
 
-  def handle_event(_,_,socket), do: {:noreply, socket}
+  def handle_event(event,_,socket) do
+    socket = socket
+             |> put_flash(:info, "Event: #{event}")
+    {:noreply, socket}
+  end
 
  end

@@ -42,8 +42,7 @@ var EuiCheckbox = /** @class */ (function (_super) {
             if (this.input) {
                 this.input.value = this.checked ? 'true' : 'false';
                 this.input.toggleAttribute('checked', this.checked);
-                var event_1 = new Event("input", { bubbles: true });
-                this.input.dispatchEvent(event_1);
+                this.triggerPhx(this.input);
             }
         }
     };

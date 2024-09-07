@@ -33,10 +33,7 @@ export class EuiCheckbox extends HeadlessUiLikeWebComponent {
             if (this.input)  {
                 this.input.value = this.checked ? 'true' : 'false';
                 this.input.toggleAttribute('checked', this.checked);
-
-                    let event = new Event("input", {bubbles: true});
-                    this.input.dispatchEvent(event);
-
+                this.triggerPhx(this.input);
             }
         }
     }

@@ -144,6 +144,10 @@ var HeadlessUiLikeWebComponent = /** @class */ (function (_super) {
     HeadlessUiLikeWebComponent.prototype.attributeChangedCallback = function (name, oldValue, newValue) {
         console.log("Attribute ".concat(name, " has changed from ").concat(oldValue, " to ").concat(newValue, "."), this);
     };
+    HeadlessUiLikeWebComponent.prototype.triggerPhx = function (element) {
+        var event = new Event("input", { bubbles: true });
+        element.dispatchEvent(event);
+    };
     HeadlessUiLikeWebComponent.prototype.setFlag = function (target, flag) {
         target.toggleAttribute("data-".concat(flag), true);
     };

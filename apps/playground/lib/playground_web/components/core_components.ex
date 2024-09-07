@@ -700,8 +700,8 @@ defmodule PlaygroundWeb.CoreComponents do
   end
   def showcase(assigns) do
     ~H"""
-      <form>
-      <span class="text-black"><%= @id %></span><div
+
+      <div
         id={@id}
         class={["
           showcase-container
@@ -723,34 +723,43 @@ defmodule PlaygroundWeb.CoreComponents do
         <div class="tabs mb-0 pb-0 ">
         <%= for {example, index} <- Enum.with_index(@example) do %>
             <button
-                  phx-click={JS.add_class("hidden", to: "##{@id} .example-item") |> JS.remove_class("hidden", to: "##{@id}-#{index}")}
+                  phx-click={
+                          JS.remove_attribute("data-selected", to: "##{@id} .tab-button")
+                          |> JS.remove_attribute("data-selected", to: "##{@id} .example-item")
+                          |> JS.set_attribute({"data-selected", true}, to: "##{@id}-#{index}")
+                          |> JS.set_attribute({"data-selected", true})
+                  }
 
                   class="tab-button
                               px-1
                               border border-b-0 border-gray-400
                               rounded-t-sm
-                              bg-yellow-100">
+                              bg-yellow-100 data-[selected]:bg-green-100">
               <%= example.name %>
             </button>
          <% end %>
         </div>
+
         <div class="example-content  border border-gray-500 shadow-sm  flex-1 ">
+
           <%= for {example, index} <- Enum.with_index(@example) do %>
+
             <div id={"#{@id}-#{index}"}
                     class={[
-                      "example-item flex flex-row h-full w-full justify-center items-center",
-                        example[:class],
-                       index != 0 && "hidden" || nil
+                      "example-item  hidden data-[selected]:block",
+                        example[:class]
                     ]}>
-
+    <form class=" flex flex-row h-full w-full justify-center items-center">
                 <%= render_slot(example) %>
-
+    </form>
             </div>
+
           <% end %>
+
         </div>
+
       </div>
     </div>
-    </form>
     """
 
   end

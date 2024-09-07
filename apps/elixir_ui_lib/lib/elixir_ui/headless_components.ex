@@ -6,6 +6,19 @@ defmodule ElixirUI.HeadlessComponents do
 
   alias Phoenix.LiveView.JS
 
+
+  def phx_attributes(rest) do
+    rest
+    |> Enum.filter(fn {k,_} -> String.starts_with?(Atom.to_string(k), "phx-") end)
+    |> Enum.into(%{})
+  end
+
+  def non_phx_attributes(rest) do
+    rest
+    |> Enum.reject(fn {k,_} -> String.starts_with?(Atom.to_string(k), "phx-") end)
+    |> Enum.into(%{})
+  end
+
   attr :as, :string, required: true, doc: "The name of the tag, such as `div`."
   attr :rest, :global, doc: "Additional HTML attributes to add to the tag, ensuring proper escaping."
   slot :inner_block
@@ -198,7 +211,7 @@ defmodule ElixirUI.HeadlessComponents do
        doc: "a form field struct retrieved from the form, for example: @form[:email]"
   attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
 
-  attr :as, :any, default: :span
+  attr :as, :any, default: :button
   attr :class, :string, default: nil
   attr :disabled, :boolean, default: false
   attr :rest, :global
@@ -242,7 +255,8 @@ defmodule ElixirUI.HeadlessComponents do
       name={@name}
       value={@checked && "true" || "false"}
       {@disabled && %{disabled: []} || %{} }
-      {Map.take(@rest, [:"phx-change",:"phx-click",:"phx-focus",:"phx-blur",:"phx-keydown",:"phx-keyup",:"phx-keypress"])}
+      {phx_attributes(@rest)}
+
 
 
     />
