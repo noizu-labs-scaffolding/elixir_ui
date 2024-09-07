@@ -10,7 +10,7 @@ module.exports = {
     "./js/**/*.js",
     "../lib/playground_web.ex",
     "../lib/playground_web/**/*.*ex",
-    "../../elixir_ui_lib/lib/elixir_ui.*ex",
+    "../../elixir_ui_lib/lib/elixir_ui.ex",
     "../../elixir_ui_lib/lib/elixir_ui/**/*.*ex"
   ],
   theme: {
@@ -22,6 +22,8 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/forms"),
+    require("@tailwindcss/typography"),
+
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:
     //

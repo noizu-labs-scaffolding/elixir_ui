@@ -3,3 +3,4 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+@import "../../../elixir_ui_lib/assets/css/elixir_ui.css";

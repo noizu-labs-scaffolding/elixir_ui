@@ -681,7 +681,6 @@ defmodule PlaygroundWeb.CoreComponents do
   #=============================================
 
 
-
   @doc """
   Showcase ElixirUI Element for development/preview.
   Will eventually make this prettier like headlessui/tailwind widget viewers but this is enough for now.
@@ -706,7 +705,7 @@ defmodule PlaygroundWeb.CoreComponents do
         class={["
           showcase-container
           flex flex-col
-          bg-white
+          bg-black/20
           border
           rounded-lg
           p-4 m-4 ", @rest[:class]]}
@@ -753,6 +752,7 @@ defmodule PlaygroundWeb.CoreComponents do
     """
 
   end
+
 
 
 

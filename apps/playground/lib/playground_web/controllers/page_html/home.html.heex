@@ -1,11 +1,18 @@
 <.flash_group flash={@flash} />
 <h1> Widgets </h1>
 
+<.showcase class="w-3/6 h-64">
+<:title>Button Component</:title>
+<:example name="Stylized" class="bg-black/90 relative w-full h-full">
+
+        <div class="absolute inset-[35%] block rounded-full bg-white/50  blur-2xl"></div>
+        <div class="relative flex h-fit  w-full flex-col items-center justify-center">
+                <.button class="eui-demo" name="bob" >Hello Dolly</.button>
+        </div>
+</:example>
 
 
-
-
-
+</.showcase>
 
 <.showcase class="w-3/6 h-64">
 <:title>Dropdown Component</:title>
@@ -65,7 +72,7 @@
 
 
 <:example name="Stylized" class="bg-black">
-        <.button class="h-8 inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none hover:bg-gray-600 open:bg-gray-700 focus:outline-1 focus:outline-white" >Hello Dolly</.button>
+        <.button class="inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white" >Hello Dolly</.button>
 </:example>
 
 

@@ -22,9 +22,19 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
+
+// Setup ElixirUI Hooks
+import {ReactLikeComponent_Hook} from "../../../elixir_ui_lib/assets/js";
+import {WebComponentRegisterer,WebComponentGroup} from "../../../elixir_ui_lib/assets/js";
+WebComponentRegisterer.register(WebComponentGroup.HeadlessUI);
+
+let Hooks = {};
+Hooks.ReactLikeComponents = ReactLikeComponent_Hook;
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
+  hooks: Hooks,
   params: {_csrf_token: csrfToken}
 })
 
@@ -41,4 +51,3 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-
