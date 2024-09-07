@@ -1,6 +1,7 @@
 # Intellij
 .idea/
 elixir_ui.iml
+/node_modules/*
 
 # The directory Mix will write compiled artifacts to.
 /_build/

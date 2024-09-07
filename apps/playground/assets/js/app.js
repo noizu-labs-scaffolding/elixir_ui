@@ -22,7 +22,6 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
-
 // Setup ElixirUI Hooks
 import {ReactLikeComponent_Hook} from "../../../elixir_ui_lib/assets/js";
 import {WebComponentRegisterer,WebComponentGroup} from "../../../elixir_ui_lib/assets/js";

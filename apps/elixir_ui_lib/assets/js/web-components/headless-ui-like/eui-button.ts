@@ -1,4 +1,7 @@
 import { HeadlessUiLikeWebComponent } from "./headless-ui-like-web-component";
+
+
+
 export class EuiButton extends HeadlessUiLikeWebComponent {
     button: HTMLElement | null = null;
 
@@ -6,8 +9,23 @@ export class EuiButton extends HeadlessUiLikeWebComponent {
         super();
     }
 
+
+
+    //----------------------------------
     // Event Handlers
+    //----------------------------------
+
+
+
+    handleClick(event: MouseEvent) {
+        console.log("Button clicked!", event);
+
+
+    }
+
+
     setHoverFlag(event: MouseEvent) {
+        console.log("Event", event);
         if (event.target instanceof  Element) {
             EuiButton.setFlag(event.target , 'hover');
         }
@@ -41,7 +59,7 @@ export class EuiButton extends HeadlessUiLikeWebComponent {
 
     register() {
         this.button = this.querySelector('[role="button"]');
-
+        console.log("This?", this);
         if (this.button) {
             this.button.addEventListener('mouseenter', this.setHoverFlag);
             this.button.addEventListener('mouseleave', this.clearHoverFlag);
