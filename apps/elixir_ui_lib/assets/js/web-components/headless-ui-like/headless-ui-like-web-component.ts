@@ -31,7 +31,7 @@ export function areRectsOverlapping(a: Rect | null, b: Rect | null) {
     return true
 }
 
-class EventManager {
+export class EventManager {
     public active: Function[] = [];
 
     constructor() {
@@ -72,7 +72,7 @@ class EventManager {
         })
     }
 
-    group(cb: (d: typeof this) => void) {
+    group(cb: (d: EventManager) => void) {
     let g = new EventManager();
     // Run set of operations on new manager group.
     cb(g);
@@ -104,12 +104,16 @@ class EventManager {
         }
     }
 
+    pending() {
+        return this.active.length > 0;
+    }
+
 
 }
 
 
-
 export class HeadlessUiLikeWebComponent extends HTMLElement {
+    public manager: EventManager = new EventManager();
     constructor() {
         super();
     }
@@ -120,6 +124,9 @@ export class HeadlessUiLikeWebComponent extends HTMLElement {
 
     disconnectedCallback() {
         console.log("Custom element removed from page.", this);
+        if (this.manager) {
+            this.manager.release();
+        }
     }
 
     adoptedCallback() {
@@ -132,16 +139,16 @@ export class HeadlessUiLikeWebComponent extends HTMLElement {
 
 
 
-    static setFlag(target: Element, flag: string) {
+    setFlag(target: Element, flag: string) {
         target.toggleAttribute(`data-${flag}`, true);
     }
-    static clearFlag(target: Element, flag: string) {
+    clearFlag(target: Element, flag: string) {
         target.toggleAttribute(`data-${flag}`, false);
     }
-    static setStatus(target: Element, status: string, value: string) {
+    setStatus(target: Element, status: string, value: string) {
         target.setAttribute(`data-${status}`, value);
     }
-    static clearStatus(target: Element, status: string, value: string) {
+    clearStatus(target: Element, status: string, value: string) {
         target.toggleAttribute(`data-${status}`, false);
     }
 

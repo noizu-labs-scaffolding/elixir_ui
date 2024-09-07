@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HeadlessUiLikeWebComponent = exports.areRectsOverlapping = exports.pointerRectFromPointerEvent = void 0;
+exports.HeadlessUiLikeWebComponent = exports.EventManager = exports.areRectsOverlapping = exports.pointerRectFromPointerEvent = void 0;
 function pointerRectFromPointerEvent(event) {
     // Center of the pointer geometry
     var offsetX = event.width / 2;
@@ -116,18 +116,27 @@ var EventManager = /** @class */ (function () {
             closeHandler();
         }
     };
+    EventManager.prototype.pending = function () {
+        return this.active.length > 0;
+    };
     return EventManager;
 }());
+exports.EventManager = EventManager;
 var HeadlessUiLikeWebComponent = /** @class */ (function (_super) {
     __extends(HeadlessUiLikeWebComponent, _super);
     function HeadlessUiLikeWebComponent() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this.manager = new EventManager();
+        return _this;
     }
     HeadlessUiLikeWebComponent.prototype.connectedCallback = function () {
         console.log("Custom element added to page.", this);
     };
     HeadlessUiLikeWebComponent.prototype.disconnectedCallback = function () {
         console.log("Custom element removed from page.", this);
+        if (this.manager) {
+            this.manager.release();
+        }
     };
     HeadlessUiLikeWebComponent.prototype.adoptedCallback = function () {
         console.log("Custom element moved to new page.", this);
@@ -135,16 +144,16 @@ var HeadlessUiLikeWebComponent = /** @class */ (function (_super) {
     HeadlessUiLikeWebComponent.prototype.attributeChangedCallback = function (name, oldValue, newValue) {
         console.log("Attribute ".concat(name, " has changed from ").concat(oldValue, " to ").concat(newValue, "."), this);
     };
-    HeadlessUiLikeWebComponent.setFlag = function (target, flag) {
+    HeadlessUiLikeWebComponent.prototype.setFlag = function (target, flag) {
         target.toggleAttribute("data-".concat(flag), true);
     };
-    HeadlessUiLikeWebComponent.clearFlag = function (target, flag) {
+    HeadlessUiLikeWebComponent.prototype.clearFlag = function (target, flag) {
         target.toggleAttribute("data-".concat(flag), false);
     };
-    HeadlessUiLikeWebComponent.setStatus = function (target, status, value) {
+    HeadlessUiLikeWebComponent.prototype.setStatus = function (target, status, value) {
         target.setAttribute("data-".concat(status), value);
     };
-    HeadlessUiLikeWebComponent.clearStatus = function (target, status, value) {
+    HeadlessUiLikeWebComponent.prototype.clearStatus = function (target, status, value) {
         target.toggleAttribute("data-".concat(status), false);
     };
     return HeadlessUiLikeWebComponent;

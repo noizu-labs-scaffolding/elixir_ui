@@ -22,67 +22,63 @@ var EuiButton = /** @class */ (function (_super) {
     function EuiButton() {
         var _this = _super.call(this) || this;
         _this.button = null;
+        _this.disabled = false;
+        _this.active = false;
         return _this;
     }
-    //----------------------------------
-    // Event Handlers
-    //----------------------------------
-    EuiButton.prototype.handleClick = function (event) {
-        console.log("Button clicked!", event);
+    EuiButton.prototype.button_element = function () {
+        return this.querySelector('[role="button"]');
     };
-    EuiButton.prototype.setHoverFlag = function (event) {
-        console.log("Event", event);
-        if (event.target instanceof Element) {
-            EuiButton.setFlag(event.target, 'hover');
-        }
-    };
-    EuiButton.prototype.clearHoverFlag = function (event) {
-        if (event.target instanceof Element) {
-            EuiButton.clearFlag(event.target, 'hover');
-        }
-    };
-    EuiButton.prototype.setFocusFlag = function (event) {
-        if (event.target instanceof Element) {
-            EuiButton.setFlag(event.target, 'focus');
-        }
-    };
-    EuiButton.prototype.clearFocusFlag = function (event) {
-        if (event.target instanceof Element) {
-            EuiButton.clearFlag(event.target, 'focus');
-        }
-    };
-    EuiButton.prototype.setActiveFlag = function (event) {
-        if (event.target instanceof Element) {
-            EuiButton.setFlag(event.target, 'active');
-        }
-    };
-    EuiButton.prototype.clearActiveFlag = function (event) {
-        if (event.target instanceof Element) {
-            EuiButton.clearFlag(event.target, 'active');
+    EuiButton.prototype.setPressed = function (to) {
+        if (this.active !== to) {
+            this.active = to;
+            if (this.button) {
+                (this.active) ? this.setFlag(this.button, 'active') : this.clearFlag(this.button, 'active');
+            }
         }
     };
     EuiButton.prototype.register = function () {
-        this.button = this.querySelector('[role="button"]');
-        console.log("This?", this);
+        var _this = this;
+        var _a;
+        this.button = (_a = this.button) !== null && _a !== void 0 ? _a : this.button_element();
         if (this.button) {
-            this.button.addEventListener('mouseenter', this.setHoverFlag);
-            this.button.addEventListener('mouseleave', this.clearHoverFlag);
-            this.button.addEventListener('focus', this.setFocusFlag);
-            this.button.addEventListener('blur', this.clearFocusFlag);
-            this.button.addEventListener('mousedown', this.setActiveFlag);
-            this.button.addEventListener('mouseup', this.clearActiveFlag);
+            this.manager.addEventListener(this.button, 'mouseenter', function () { return _this.setFlag(_this.button, 'hover'); });
+            this.manager.addEventListener(this.button, 'mouseleave', function () { return _this.clearFlag(_this.button, 'hover'); });
+            // Focus Tracking : crude initial version: focus should only be set by keyboard navigation not mouse clicks.
+            this.manager.addEventListener(this.button, 'focus', function () { return !_this.active && _this.setFlag(_this.button, 'focus'); });
+            this.manager.addEventListener(this.button, 'blur', function () { return !_this.active && _this.clearFlag(_this.button, 'focus'); });
+            // Refactor into reusable method (press Active)
+            var pressManager_1 = new headless_ui_like_web_component_1.EventManager();
+            var pressTarget_1 = { current: null };
+            var releasePress_1 = function () {
+                pressTarget_1.current = null;
+                _this.setPressed(false);
+                pressManager_1.release();
+            };
+            this.manager.addEventListener(this.button, 'pointerup', releasePress_1);
+            this.manager.addEventListener(this.button, 'click', releasePress_1);
+            this.manager.addEventListener(this.button, 'pointerdown', function (event) {
+                pressManager_1.release();
+                if (pressTarget_1.current !== null)
+                    return;
+                pressTarget_1.current = event.currentTarget;
+                _this.setPressed(true);
+                {
+                    var outerElement = (event.target instanceof Node) ? event.target.ownerDocument : document;
+                    pressManager_1.addEventListener(outerElement, 'pointerup', releasePress_1, false);
+                    pressManager_1.addEventListener(outerElement, 'pointermove', function (event) {
+                        if (pressTarget_1.current) {
+                            var boundry = (0, headless_ui_like_web_component_1.pointerRectFromPointerEvent)(event);
+                            _this.setPressed((0, headless_ui_like_web_component_1.areRectsOverlapping)(boundry, pressTarget_1.current.getBoundingClientRect()));
+                        }
+                    }, false);
+                    pressManager_1.addEventListener(outerElement, 'pointercancel', releasePress_1, false);
+                }
+            });
         }
     };
     EuiButton.prototype.deregister = function () {
-        if (this.button) {
-            this.button.removeEventListener('mouseenter', this.setHoverFlag);
-            this.button.removeEventListener('mouseleave', this.clearHoverFlag);
-            this.button.removeEventListener('focus', this.setFocusFlag);
-            this.button.removeEventListener('blur', this.clearFocusFlag);
-            this.button.removeEventListener('mousedown', this.setActiveFlag);
-            this.button.removeEventListener('mouseup', this.clearActiveFlag);
-            this.button = null;
-        }
+        this.manager.release();
     };
     EuiButton.prototype.connectedCallback = function () {
         console.log("Custom element added to page.", this);

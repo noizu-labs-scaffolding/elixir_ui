@@ -1,104 +1,106 @@
-import { HeadlessUiLikeWebComponent } from "./headless-ui-like-web-component";
+import {
+    areRectsOverlapping,
+    EventManager,
+    HeadlessUiLikeWebComponent,
+    pointerRectFromPointerEvent
+} from "./headless-ui-like-web-component";
 
 
 
 export class EuiButton extends HeadlessUiLikeWebComponent {
     button: HTMLElement | null = null;
+    disabled: boolean = false;
+    active: boolean = false;
 
     constructor() {
         super();
     }
 
-
-
-    //----------------------------------
-    // Event Handlers
-    //----------------------------------
-
-
-
-    handleClick(event: MouseEvent) {
-        console.log("Button clicked!", event);
-
-
+    button_element(): HTMLElement | null {
+        return this.querySelector('[role="button"]');
     }
 
-
-    setHoverFlag(event: MouseEvent) {
-        console.log("Event", event);
-        if (event.target instanceof  Element) {
-            EuiButton.setFlag(event.target , 'hover');
+    setPressed(to: boolean) {
+        if (this.active !== to) {
+            this.active = to;
+            if(this.button) {
+                (this.active) ? this.setFlag(this.button,'active') : this.clearFlag(this.button,'active');
+            }
         }
     }
-    clearHoverFlag(event: MouseEvent) {
-        if (event.target instanceof  Element) {
-            EuiButton.clearFlag(event.target , 'hover');
-        }
-    }
-    setFocusFlag(event: FocusEvent) {
-        if (event.target instanceof  Element) {
-            EuiButton.setFlag(event.target , 'focus');
-        }
-    }
-    clearFocusFlag(event: FocusEvent) {
-        if (event.target instanceof  Element) {
-            EuiButton.clearFlag(event.target , 'focus');
-        }
-    }
-    setActiveFlag(event: MouseEvent) {
-        if (event.target instanceof  Element) {
-            EuiButton.setFlag(event.target , 'active');
-        }
-    }
-    clearActiveFlag(event: MouseEvent) {
-        if (event.target instanceof  Element) {
-            EuiButton.clearFlag(event.target , 'active');
-        }
-    }
-
 
     register() {
-        this.button = this.querySelector('[role="button"]');
-        console.log("This?", this);
+        this.button = this.button ?? this.button_element();
         if (this.button) {
-            this.button.addEventListener('mouseenter', this.setHoverFlag);
-            this.button.addEventListener('mouseleave', this.clearHoverFlag);
-            this.button.addEventListener('focus', this.setFocusFlag);
-            this.button.addEventListener('blur', this.clearFocusFlag);
-            this.button.addEventListener('mousedown', this.setActiveFlag);
-            this.button.addEventListener('mouseup', this.clearActiveFlag);
+            this.manager.addEventListener(this.button, 'mouseenter', () => this.setFlag(this.button, 'hover'));
+            this.manager.addEventListener(this.button, 'mouseleave', () => this.clearFlag(this.button, 'hover'));
+
+
+            // Focus Tracking : crude initial version: focus should only be set by keyboard navigation not mouse clicks.
+            this.manager.addEventListener(this.button, 'focus',  () => !this.active && this.setFlag(this.button, 'focus'));
+            this.manager.addEventListener(this.button, 'blur',  () => !this.active && this.clearFlag(this.button, 'focus'));
+
+
+            // Refactor into reusable method (press Active)
+            let pressManager = new EventManager();
+            let pressTarget: {current: HTMLElement | null} = {current: null};
+
+            let releasePress = () => {
+                pressTarget.current = null;
+                this.setPressed(false)
+                pressManager.release();
+            }
+
+            this.manager.addEventListener(this.button, 'pointerup', releasePress);
+            this.manager.addEventListener(this.button, 'click', releasePress);
+            this.manager.addEventListener(this.button, 'pointerdown', (event) => {
+                pressManager.release();
+
+                if (pressTarget.current !== null) return;
+
+                pressTarget.current = event.currentTarget as HTMLElement
+                this.setPressed(true)
+
+                {
+                    let outerElement = (event.target instanceof Node) ? event.target.ownerDocument : document;
+                    pressManager.addEventListener(outerElement, 'pointerup', releasePress, false);
+                    pressManager.addEventListener(outerElement, 'pointermove', (event: PointerEvent) => {
+                        if (pressTarget.current) {
+                            let boundry = pointerRectFromPointerEvent(event);
+                            this.setPressed(areRectsOverlapping(boundry, pressTarget.current.getBoundingClientRect()))
+                        }
+
+                    }, false);
+                    pressManager.addEventListener(outerElement, 'pointercancel', releasePress, false);
+                }
+            });
+
+
+
+
         }
     }
 
     deregister() {
-
-        if (this.button) {
-            this.button.removeEventListener('mouseenter', this.setHoverFlag);
-            this.button.removeEventListener('mouseleave', this.clearHoverFlag);
-            this.button.removeEventListener('focus', this.setFocusFlag);
-            this.button.removeEventListener('blur', this.clearFocusFlag);
-            this.button.removeEventListener('mousedown', this.setActiveFlag);
-            this.button.removeEventListener('mouseup', this.clearActiveFlag);
-            this.button = null;
-        }
+        this.manager.release();
     }
 
 
-    connectedCallback() {
+    override connectedCallback() {
         console.log("Custom element added to page.", this);
         this.register();
     }
 
-    disconnectedCallback() {
+    override disconnectedCallback() {
         console.log("Custom element removed from page.", this);
         this.deregister();
     }
 
-    adoptedCallback() {
+    override adoptedCallback() {
         console.log("Custom element moved to new page.", this);
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
+    override attributeChangedCallback(name, oldValue, newValue) {
         console.log(`Attribute ${name} has changed from ${oldValue} to ${newValue}.`, this);
     }
 
